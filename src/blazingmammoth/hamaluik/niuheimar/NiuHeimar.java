@@ -6,12 +6,11 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
-import org.newdawn.slick.SpriteSheetFont;
 
 import blazingmammoth.hamaluik.niuheimar.console.Console;
 import blazingmammoth.hamaluik.niuheimar.gui.GuiSplashScreen;
 import blazingmammoth.hamaluik.niuheimar.log.GameLog;
+import blazingmammoth.hamaluik.niuheimar.util.FontRenderer;
 
 public class NiuHeimar extends BasicGame {
 	// our game container provided by slick
@@ -24,7 +23,7 @@ public class NiuHeimar extends BasicGame {
 	private static Console console;
 	
 	// our font
-	public static SpriteSheetFont font;
+	FontRenderer fontRenderer;
 	
 	// internal states
 	private static boolean consoleOpen = false;
@@ -56,10 +55,10 @@ public class NiuHeimar extends BasicGame {
 		
 		// initiliaze our font
 		try {
-			font = new SpriteSheetFont(new SpriteSheet("resources/font/default.png", 8, 8), (char)0);
-			gc.setDefaultFont(font);
-		}catch (SlickException e) {
-			GameLog.stackTrace(this.getClass(), e);
+			fontRenderer = new FontRenderer(gc);
+		}
+		catch (Exception e) {
+			GameLog.stackTrace(this, e);
 		}
 		
 		// initialize our console

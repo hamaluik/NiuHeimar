@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -13,6 +12,7 @@ import org.newdawn.slick.KeyListener;
 import org.newdawn.slick.SlickException;
 
 import blazingmammoth.hamaluik.niuheimar.ScreenProvider;
+import blazingmammoth.hamaluik.niuheimar.util.FontRenderer;
 
 public class Console implements KeyListener {
 	// keep track of what we should be rendering in the background
@@ -29,14 +29,21 @@ public class Console implements KeyListener {
 	private StringBuffer textBuffer = new StringBuffer();
 	
 	// hold output and old commands
-	private ArrayDeque<String> messages = new ArrayDeque<String>();
+	private static ArrayDeque<String> messages = new ArrayDeque<String>();
 	private int oldCommandIndex = 0;
 	private LinkedList<String> oldCommands = new LinkedList<String>();
 	
 	// states
 	private boolean showing = false;
+	private boolean lastWasUp = false;
+	private boolean lastWasDown = false;
+	
+	// keep track of our commands
+	CommandManager commandManager;
 	
 	public Console(GameContainer gc) {
+		// intialize our command manager
+		commandManager = new CommandManager();
 	}
 	
 	public void hide(GameContainer gc) {
@@ -67,8 +74,7 @@ public class Console implements KeyListener {
 		g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
 		
 		// render the text entry starter string
-		Font font = gc.getDefaultFont();
-		font.drawString(2, gc.getHeight() - font.getHeight(">> ") - 2, ">> ");
+		FontRenderer.drawString(2, gc.getHeight() - FontRenderer.getLineHeight() - 2, ">> ");
 		
 		// ok, flash the caret
 		if(System.currentTimeMillis() - lastTime > 500) {
@@ -86,16 +92,16 @@ public class Console implements KeyListener {
 		}
 		
 		// render the string!
-		font.drawString(2 + font.getWidth(">> "), gc.getHeight() - font.getHeight(">> ") - 2, display, Color.white);
+		FontRenderer.drawString(2 + FontRenderer.getWidth(">> "), gc.getHeight() - FontRenderer.getLineHeight() - 2, display);
 		
 		// now display the messages
-		float y = gc.getHeight() - (2 * font.getHeight("> ")) - 6;
+		float y = gc.getHeight() - (2 * FontRenderer.getLineHeight()) - 6;
 		// and loop over all the messages!
 		Iterator<String> it = messages.iterator();
 		while(it.hasNext()) {
 			String message = it.next();
-			font.drawString(2, y, message, Color.lightGray);
-			y -= (font.getHeight("> ") + 2);
+			FontRenderer.drawString(2, y, "&7" + message);
+			y -= (FontRenderer.getLineHeight() + 2);
 		}
 	}
 
@@ -114,7 +120,7 @@ public class Console implements KeyListener {
 	public void setInput(Input input) {}
 
 	@Override
-	public void keyPressed(int key, char c) {		
+	public void keyPressed(int key, char c) {
 		if(key == Input.KEY_TAB) {
 			// handle auto-complete
 		}
@@ -133,9 +139,25 @@ public class Console implements KeyListener {
 		}
 		else if(key == Input.KEY_UP && oldCommandIndex < oldCommands.size()) {
 			// handle scrolling old commands (up)
+			if(lastWasDown) {
+				oldCommandIndex++;
+				lastWasDown = false;
+			}
 			textBuffer = new StringBuffer(oldCommands.get(oldCommandIndex));
 			caretPos = textBuffer.length();
 			oldCommandIndex++;
+			lastWasUp = true;
+		}
+		else if(key == Input.KEY_DOWN && oldCommands.size() > 0 && oldCommandIndex > 0) {
+			// handle scrolling old commands (down)
+			if(lastWasUp) {
+				oldCommandIndex--;
+				lastWasUp = false;
+			}
+			oldCommandIndex--;
+			textBuffer = new StringBuffer(oldCommands.get(oldCommandIndex));
+			caretPos = textBuffer.length();
+			lastWasDown = true;
 		}
 		else if(key == Input.KEY_DELETE && caretPos < textBuffer.length() && caretPos < textBuffer.length()) {
 			// handle deleting characters forwards
@@ -171,14 +193,14 @@ public class Console implements KeyListener {
 	}
 	
 	private void addOldCommand(String command) {
-		oldCommands.add(command);
+		oldCommands.addFirst(command);
 		// pop the last one off if we're too big
 		if(oldCommands.size() > 100) {
-			oldCommands.removeFirst();
+			oldCommands.removeLast();
 		}
 	}
 	
-	private void addMessage(String message) {
+	public static void addMessage(String message) {
 		messages.push(message);
 		// pop the last one off if we're too big
 		if(messages.size() > 100) {
@@ -192,5 +214,10 @@ public class Console implements KeyListener {
 		
 		// add the current command to the top of queue
 		addMessage("> " + textBuffer.toString());
+		
+		// now attempt to parse the command
+		if(!commandManager.parseCommand(textBuffer.toString())) {
+			addMessage("Unknown command: " + textBuffer.toString());
+		}
 	}
 }

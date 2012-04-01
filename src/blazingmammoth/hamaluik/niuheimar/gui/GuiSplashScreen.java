@@ -6,7 +6,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 import blazingmammoth.hamaluik.niuheimar.NiuHeimar;
-import blazingmammoth.hamaluik.niuheimar.log.GameLog;
 
 public class GuiSplashScreen extends Gui {
 	private Image logo;
@@ -27,7 +26,6 @@ public class GuiSplashScreen extends Gui {
 		t += delta;
 		
 		if(t >= 1000) {
-			GameLog.info(this, "splash over, heading to main menu");
 			NiuHeimar.setScreenProvider(new GuiMainMenu());
 		}
 	}

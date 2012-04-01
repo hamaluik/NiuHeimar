@@ -1,10 +1,11 @@
 package blazingmammoth.hamaluik.niuheimar.gui;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+
+import blazingmammoth.hamaluik.niuheimar.util.FontRenderer;
 
 public class GuiMainMenu extends Gui {
 	private Image bg;
@@ -33,7 +34,7 @@ public class GuiMainMenu extends Gui {
 		
 		// render the menu name
 		String mainMenuText = "Main Menu";
-		gc.getDefaultFont().drawString((gc.getWidth() - gc.getDefaultFont().getWidth(mainMenuText)) / 2, 5, mainMenuText, Color.white);
+		FontRenderer.drawString((gc.getWidth() - FontRenderer.getWidth(mainMenuText)) / 2, 5, mainMenuText);
 	}
 
 }
