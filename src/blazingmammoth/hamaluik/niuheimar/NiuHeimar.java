@@ -43,36 +43,31 @@ public class NiuHeimar extends BasicGame {
 	}
 
 	@Override
-	public void init(GameContainer gc) {
-		// begin our log
-		GameLog.info(this, "Game init");
-		
-		// we don't need to render at a billion FPS, keep it around 30
-		gc.setTargetFrameRate(30);
-		
-		// turn off FPS
-		gc.setShowFPS(false);
-		
-		// initiliaze our font
+	public void init(GameContainer gc) {		
 		try {
+			// begin our log
+			GameLog.info(this, "Game init");
+			
+			// we don't need to render at a billion FPS, keep it around 30
+			gc.setTargetFrameRate(30);
+			
+			// turn off FPS
+			gc.setShowFPS(false);
+			
+			// initialize our font
 			fontRenderer = new FontRenderer(gc);
-		}
-		catch (Exception e) {
-			GameLog.stackTrace(this, e);
-		}
-		
-		// initialize our console
-		console = new Console(gc);
-		gc.getInput().addKeyListener(console);
-		
-		// update our game container
-		gameContainer = gc;
-		
-		// let the screen provider initialize itself
-		try {
+			
+			// initialize our console
+			console = new Console(gc);
+			gc.getInput().addKeyListener(console);
+			
+			// update our game container
+			gameContainer = gc;
+
+			// let the screen provider initialize itself
 			screenProvider.init(gc);
 		}
-		catch (SlickException e) {
+		catch (Exception e) {
 			GameLog.stackTrace(this.getClass(), e);
 		}
 	}

@@ -41,7 +41,7 @@ public class Console implements KeyListener {
 	// keep track of our commands
 	CommandManager commandManager;
 	
-	public Console(GameContainer gc) {
+	public Console(GameContainer gc) throws Exception {
 		// intialize our command manager
 		commandManager = new CommandManager();
 	}
