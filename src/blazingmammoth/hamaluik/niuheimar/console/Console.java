@@ -12,6 +12,7 @@ import org.newdawn.slick.KeyListener;
 import org.newdawn.slick.SlickException;
 
 import blazingmammoth.hamaluik.niuheimar.ScreenProvider;
+import blazingmammoth.hamaluik.niuheimar.log.GameLog;
 import blazingmammoth.hamaluik.niuheimar.util.FontRenderer;
 
 public class Console implements KeyListener {
@@ -216,8 +217,13 @@ public class Console implements KeyListener {
 		addMessage("> " + textBuffer.toString());
 		
 		// now attempt to parse the command
-		if(!commandManager.parseCommand(textBuffer.toString())) {
-			addMessage("Unknown command: " + textBuffer.toString());
+		try {
+			if(!commandManager.parseCommand(textBuffer.toString())) {
+				addMessage("Unknown command: " + textBuffer.toString());
+			}
+		}
+		catch (Exception e) {
+			GameLog.stackTrace(this, e);
 		}
 	}
 }

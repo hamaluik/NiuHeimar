@@ -10,8 +10,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
-import blazingmammoth.hamaluik.niuheimar.log.GameLog;
-
 public class CommandManager {
 	private static HashMap<String, CommandInfo> commands = new HashMap<String, CommandInfo>();
 	private static ArrayList<Scriptable> commandClasses = new ArrayList<Scriptable>();
@@ -79,32 +77,53 @@ public class CommandManager {
 			for(int j = 0; j < annotations.length; j++) {
 				if(annotations[j] instanceof ScriptInfo) {
 					// we found our annotation
-					ScriptInfo si = (ScriptInfo)annotations[i];
+					ScriptInfo si = (ScriptInfo)annotations[j];
 					
-					// add the command
-					if(!commands.containsKey(si.alias())) {
-						commands.put(si.alias(), new CommandInfo(si.alias(), si.args(), si.description(), si.longDescription(), methods[i]));
+					// create the command name
+					String commandName = si.alias();
+					// get the command args
+					Class[] params = methods[i].getParameterTypes();
+					for(int k = 0; k < params.length; k++) {
+						// append the arguments to it so that each one is unique
+						commandName += ":" + params[k].getSimpleName();
 					}
+					
+					// create the command info
+					CommandInfo ci = new CommandInfo();
+					ci.alias = si.alias();
+					ci.argNames = si.args();
+					ci.argDescriptions = si.argDescriptions();
+					ci.description = si.description();
+					if(si.longDescription().equals("")) {
+						ci.longDescription = si.description();
+					}
+					else {
+						ci.longDescription = si.longDescription();
+					}
+					ci.method = methods[i];
+					
+					// and add the command!
+					commands.put(commandName, ci);
 				}
 			}
 		}
 	}
 	
-	private boolean handleCommand(String command, String[] args) {		
-		Method method = commands.get(command).method;
-		Object[] objArgs = new Object[1];
-		objArgs[0] = args;
-		try {
-			return (boolean)method.invoke(null, objArgs);
+	public static boolean commandExists(String command) {
+		for(String cmd: commands.keySet()) {
+			// tokenize it
+			String[] parts = cmd.split(":");
+			
+			// see if we have the command
+			if(parts[0].equals(command)) {
+				return true;
+			}
 		}
-		catch (Exception e) {
-			GameLog.stackTrace("CommandManager", e);
-		}
-		
 		return false;
 	}
 	
-	public boolean parseCommand(String line) {
+	@SuppressWarnings("rawtypes")
+	public boolean parseCommand(String line) throws Exception {
 		// split the line by spaces
 		String[] tokens = line.split(" ");
 		
@@ -114,10 +133,10 @@ public class CommandManager {
 		}
 		
 		// get the command
-		String command = tokens[0];
+		String command = tokens[0].toLowerCase();
 		
 		// make sure it exists
-		if(!commands.containsKey(command)) {
+		if(!commandExists(command)) {
 			// didn't exist, couldn't handle it
 			return false;
 		}
@@ -128,23 +147,71 @@ public class CommandManager {
 			argsLength = 0;
 		}
 		
-		// parse the args
-		String[] args = new String[argsLength];
-		for(int i = 0; i < argsLength; i++) {
-			args[i] = tokens[i + 1];
+		// collect all functions that match our description
+		ArrayList<String> possibleCommands = new ArrayList<String>();
+		// loop through all commands
+		for(String cmd: commands.keySet()) {
+			// tokenize it
+			String[] parts = cmd.split(":");
+			
+			// see if we have the command
+			if(parts[0].equals(command)) {
+				// ok, now see if we have the right number of args
+				if(argsLength == commands.get(cmd).method.getParameterTypes().length) {
+					// ok, same length
+					// add it, we'll check parameter types in a sec
+					possibleCommands.add(cmd);
+				}
+			}
 		}
 		
-		// ok, everything seems to be in order
-		// call it!
-		if(!handleCommand(command, args)) {
-			// uh-oh, something was wrong!
-			// tell them how to call it..
-			Console.addMessage("Invalid command: " + command);
-			String usage = commands.get(command).alias + " ";
-			for(int i = 0; i < commands.get(command).argTypes.length; i++) {
-				usage += commands.get(command).argTypes[i] + " ";
+		// ok, now loop over all possible commands and see if we have one that matches
+		// what we called
+		for(int i = 0; i < possibleCommands.size(); i++) {
+			Class[] params = commands.get(possibleCommands.get(i)).method.getParameterTypes();
+			boolean possible = true;
+			Object[] args = new Object[params.length];
+			for(int j = 0; j < params.length && possible; j++) {
+				// parse ints first
+				if(params[j].equals(int.class)) {
+					try {
+						int pj = Integer.parseInt(tokens[j + 1]);
+						args[j] = pj;
+					}
+					catch(Exception e) {
+						// we didn't supply an int..
+						possible = false;
+					}
+				}
+				// parse floats next
+				else if(params[j].equals(float.class)) {
+					try {
+						float pj = Float.parseFloat(tokens[j + 1]);
+						args[j] = pj;
+					}
+					catch(Exception e) {
+						// we didn't supply an int..
+						possible = false;
+					}
+				}
+				// parse strings last
+				else if(params[j].equals(String.class)) {
+					args[j] = tokens[j + 1];
+				}
+				// something not understood?
+				else {
+					possible = false;
+				}
 			}
-			Console.addMessage("  usage: " + usage);
+			
+			if(possible) {
+				// we found a possible function!
+				// call it!
+				commands.get(possibleCommands.get(i)).method.invoke(null, args);
+				
+				// and get out of here!
+				break;
+			}
 		}
 		
 		// true because we handled it

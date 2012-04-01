@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 public @interface ScriptInfo {
 	public String alias();
 	public String[] args() default {};
+	public String[] argDescriptions() default {};
 	public String description();
 	public String longDescription() default "";
 }
