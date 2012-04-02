@@ -1,15 +1,19 @@
 package blazingmammoth.hamaluik.niuheimar;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.lwjgl.LWJGLUtil;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.ScalableGame;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.imageout.ImageOut;
 
 import blazingmammoth.hamaluik.niuheimar.console.Console;
 import blazingmammoth.hamaluik.niuheimar.gui.GuiSplashScreen;
@@ -55,6 +59,36 @@ public class NiuHeimar extends BasicGame {
 			gameContainer.setFullscreen(!gameContainer.isFullscreen());
 		}
 		catch (SlickException e) {
+			GameLog.stackTrace(NiuHeimar.class, e);
+		}
+	}
+	
+	public static void screenShot(String filename) {
+		Image target;
+		try {
+			// get the current date if have a blank filename
+			if(filename.equals("")) {
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+				filename = df.format(new Date());
+			}
+			// make sure it's a png
+			if(!filename.endsWith(".png")) {
+				filename += ".png";
+			}
+			
+			// make a folder for our screenshot
+			File screenshotDir = new File("screenshots");
+			screenshotDir.mkdirs();
+			
+			// create an image to hold our screenshot
+			target = new Image(gameContainer.getWidth(), gameContainer.getHeight());
+			
+			// capture our current game container into that image
+			gameContainer.getGraphics().copyArea(target, 0, 0);
+			
+			// write it out!
+			ImageOut.write(target, "screenshots/" + filename);
+		} catch (Exception e) {
 			GameLog.stackTrace(NiuHeimar.class, e);
 		}
 	}

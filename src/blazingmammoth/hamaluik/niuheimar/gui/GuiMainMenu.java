@@ -29,7 +29,7 @@ public class GuiMainMenu extends GuiScreen {
 			GameLog.info(this, "Load game!");
 		}
 		else if(button.getId() == 2) {
-			GameLog.info(this, "Options");
+			NiuHeimar.setScreenProvider(new GuiOptions());
 		}
 		else if(button.getId() == 3) {
 			NiuHeimar.quit();

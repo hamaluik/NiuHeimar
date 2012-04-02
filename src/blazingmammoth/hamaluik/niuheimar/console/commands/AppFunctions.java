@@ -4,7 +4,7 @@ import blazingmammoth.hamaluik.niuheimar.NiuHeimar;
 import blazingmammoth.hamaluik.niuheimar.console.ScriptInfo;
 import blazingmammoth.hamaluik.niuheimar.console.Scriptable;
 
-public class WindowStates extends Scriptable {
+public class AppFunctions extends Scriptable {
 	@ScriptInfo(
 			alias = "fullscreen",
 			args = {},
@@ -29,6 +29,25 @@ public class WindowStates extends Scriptable {
 			description = "exits the game")
 	public static boolean quit() {
 		NiuHeimar.quit();
+		return true;
+	}
+	
+	@ScriptInfo(
+			alias = "screenshot",
+			args = {},
+			description = "takes a screenshot")
+	public static boolean screenshot() {
+		NiuHeimar.screenShot("");
+		return true;
+	}
+	
+	@ScriptInfo(
+			alias = "screenshot",
+			args = {"filename"},
+			argDescriptions = {"the name of the file to store the screenshot it"},
+			description = "takes a screenshot")
+	public static boolean screenshot(String filename) {
+		NiuHeimar.screenShot(filename);
 		return true;
 	}
 }
