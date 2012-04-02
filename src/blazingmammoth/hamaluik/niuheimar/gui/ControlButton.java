@@ -56,8 +56,8 @@ public class ControlButton extends ControlComponent {
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		// draw the button
-		g.drawImage(image, x, y, x + (w / 2), y + h, 0, 0, w / 2, 20, Color.white);
-		g.drawImage(image, x + (w / 2), y, x + w, y + h, 200 - (w / 2), 0, 200, 20, Color.white);
+		g.drawImage(image, x, y, x + (w / 2), y + h, 0, hoverState ? 20 : 0, w / 2, 20 + (hoverState ? 20 : 0), Color.white);
+		g.drawImage(image, x + (w / 2), y, x + w, y + h, 200 - (w / 2), hoverState ? 20 : 0, 200, 20 + (hoverState ? 20 : 0), Color.white);
 		
 		// draw the text on the button
 		FontRenderer.drawString(x + ((w - FontRenderer.getWidth(text)) / 2), y + ((h - FontRenderer.getLineHeight()) / 2), (hoverState ? "&e" : "") + text);
