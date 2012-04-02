@@ -40,7 +40,20 @@ public class FontRenderer {
 		return Color.white;
 	}
 	
+	public static void drawStringIgnoreColour(float x, float y, String text) {
+		drawStringIgnoreColour(x, y, text, Color.white);
+	}
+	
+	public static void drawStringIgnoreColour(float x, float y, String text, Color colour) {
+		text = text.replaceAll("&[0-9a-f]", "");
+		font.drawString(x, y, text, colour);
+	}
+	
 	public static void drawString(float x, float y, String text) {
+		drawString(x, y, text, false);
+	}
+	
+	public static void drawString(float x, float y, String text, boolean shadow) {
 		// assume fixed-width fonts for now
 		int width = font.getWidth(" ");
 		Color currentColour = Color.white;
@@ -55,10 +68,15 @@ public class FontRenderer {
 			}
 			else {
 				// regular text
-				font.drawString(x, y, text.substring(i, i + 1), currentColour);
+				font.drawString(x, y, text.substring(i, i + 1), shadow ? currentColour.darker(0.75f): currentColour);
 				x += width;
 			}
 		}
+	}
+	
+	public static void drawStringWithShadow(float x, float y, String text) {
+		drawString(x + 1, y + 1, text, true);
+		drawString(x, y, text, false);
 	}
 	
 	public static int getWidth(String text) {

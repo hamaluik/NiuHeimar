@@ -4,13 +4,16 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 public abstract class GuiScreen extends Gui {
-	private ArrayList<ControlComponent> controlList = new ArrayList<ControlComponent>();
+	protected Image bg;
+	protected ArrayList<ControlComponent> controlList = new ArrayList<ControlComponent>();
 
 	@Override
 	public void init(GameContainer gc) throws SlickException {
+		bg = new Image("resources/gui/menubg.png");
 	}
 
 	@Override
@@ -27,6 +30,9 @@ public abstract class GuiScreen extends Gui {
 
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException {
+		// render the background
+		g.fillRect(0, 0, gc.getWidth(), gc.getHeight(), bg, 0, 0);
+		
 		// render all the components
 		for(int i = 0; i < controlList.size(); i++) {
 			controlList.get(i).render(gc, g);

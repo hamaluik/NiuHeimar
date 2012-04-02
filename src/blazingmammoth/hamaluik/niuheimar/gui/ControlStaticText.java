@@ -19,6 +19,6 @@ public class ControlStaticText extends ControlComponent {
 
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		FontRenderer.drawString(x, y, text);
+		FontRenderer.drawStringWithShadow(x, y, text);
 	}
 }
