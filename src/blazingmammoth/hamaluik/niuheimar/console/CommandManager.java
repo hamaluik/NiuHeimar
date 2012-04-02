@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CommandManager {
 	private static HashMap<String, CommandInfo> commands = new HashMap<String, CommandInfo>();
-	private static ArrayList<Scriptable> commandClasses = new ArrayList<Scriptable>();
+	//private static ArrayList<Scriptable> commandClasses = new ArrayList<Scriptable>();
 	
 	@SuppressWarnings("rawtypes")
 	private static Class[] getClasses(String packageName) throws ClassNotFoundException, IOException {
@@ -62,7 +62,8 @@ public class CommandManager {
 			if(!classes[i].getSimpleName().equals("Scriptable") && Scriptable.class.isAssignableFrom(classes[i])) {
 				// yup, we found a scriptable class!
 				// instantiate it!
-				commandClasses.add((Scriptable)classes[i].newInstance());
+				//commandClasses.add((Scriptable)classes[i].newInstance());
+				registerCommands(classes[i]);
 			}
 		}
 	}

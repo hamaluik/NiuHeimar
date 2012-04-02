@@ -1,24 +1,34 @@
-package blazingmammoth.hamaluik.niuheimar.console;
+package blazingmammoth.hamaluik.niuheimar.console.commands;
 
 import java.util.HashMap;
+import java.util.TreeSet;
 
-public class Help extends Scriptable {
-	public Help() {
-		CommandManager.registerCommands(this.getClass());
-	}
-	
-	@ScriptInfo(alias = "help", args = {}, description = "shows a help menu with available commands")
+import blazingmammoth.hamaluik.niuheimar.console.CommandInfo;
+import blazingmammoth.hamaluik.niuheimar.console.CommandManager;
+import blazingmammoth.hamaluik.niuheimar.console.ScriptInfo;
+import blazingmammoth.hamaluik.niuheimar.console.Scriptable;
+
+public class Help extends Scriptable {	
+	@ScriptInfo(
+			alias = "help",
+			args = {},
+			description = "shows a help menu with available commands")
 	public static boolean help() {
 		return help(1);
 	}
 	
-	@ScriptInfo(alias = "help", args = {"page"}, argDescriptions = {"specify a specific help page"}, description = "shows a help menu with available commands")
+	@ScriptInfo(
+			alias = "help",
+			args = {"page"},
+			argDescriptions = {"specify a specific help page"},
+			description = "shows a help menu with available commands")
 	public static boolean help(int page) {
 		// adjust the page
 		page--;
 		
 		// get all the registered commands
 		HashMap<String, CommandInfo> commands = CommandManager.getCommands();
+		TreeSet<String> cmdKeys = new TreeSet<String>(commands.keySet());
 		
 		// calculate how many pages this is
 		int numPages = 0;
@@ -40,7 +50,7 @@ public class Help extends Scriptable {
 		println("&f=== Help (page " + (page + 1) + "/" + numPages + ") ===");
 		
 		// ok, display help
-		for(String command: commands.keySet()) {
+		for(String command: cmdKeys) {
 			String usage = "&c" + commands.get(command).alias + " ";
 			for(int i = 0; i < commands.get(command).argNames.length; i++) {
 				usage += "&7<&6" + commands.get(command).argNames[i] + "&7> ";
@@ -52,7 +62,11 @@ public class Help extends Scriptable {
 		return true;
 	}
 
-	@ScriptInfo(alias = "help", args = {"command"}, argDescriptions = {"which command you want help on"}, description = "shows help for a specific command")
+	@ScriptInfo(
+			alias = "help",
+			args = {"command"},
+			argDescriptions = {"which command you want help on"},
+			description = "shows help for a specific command")
 	public static boolean help(String command) {
 		// ok, now get all the registered commands
 		HashMap<String, CommandInfo> commands = CommandManager.getCommands();

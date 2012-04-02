@@ -1,10 +1,14 @@
 package blazingmammoth.hamaluik.niuheimar;
 
+import java.io.File;
+
+import org.lwjgl.LWJGLUtil;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.ScalableGame;
 import org.newdawn.slick.SlickException;
 
 import blazingmammoth.hamaluik.niuheimar.console.Console;
@@ -29,8 +33,12 @@ public class NiuHeimar extends BasicGame {
 	private static boolean consoleOpen = false;
 	
 	public static void main(String[] args) throws SlickException {
-		AppGameContainer app = new AppGameContainer(new NiuHeimar("Niu Heimar"));
-		app.setDisplayMode(640, 480, false);
+		// set the native library paths
+		System.setProperty("org.lwjgl.librarypath", new File(new File(System.getProperty("user.dir"), "natives"), LWJGLUtil.getPlatformName()).getAbsolutePath());
+		System.setProperty("net.java.games.input.librarypath", System.getProperty("org.lwjgl.librarypath"));
+		
+		// ok, now create and run the game
+		AppGameContainer app = new AppGameContainer(new ScalableGame(new NiuHeimar("Niu Heimar"), 640, 480, true));
 		app.start();
 	}
 
@@ -40,6 +48,19 @@ public class NiuHeimar extends BasicGame {
 		
 		// create the default screen provider (our splash screen)
 		screenProvider = new GuiSplashScreen();
+	}
+	
+	public static void toggleFullScreen() {
+		try {
+			gameContainer.setFullscreen(!gameContainer.isFullscreen());
+		}
+		catch (SlickException e) {
+			GameLog.stackTrace(NiuHeimar.class, e);
+		}
+	}
+	
+	public static void quit() {
+		gameContainer.exit();
 	}
 
 	@Override
@@ -51,8 +72,11 @@ public class NiuHeimar extends BasicGame {
 			// we don't need to render at a billion FPS, keep it around 30
 			gc.setTargetFrameRate(30);
 			
-			// turn off FPS
+			// turn off FPS being displayed
 			gc.setShowFPS(false);
+			
+			// set our cursor
+			gc.setMouseCursor("resources/gui/cursor.png", 0, 0);
 			
 			// initialize our font
 			fontRenderer = new FontRenderer(gc);
