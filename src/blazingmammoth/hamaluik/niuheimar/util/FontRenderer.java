@@ -55,7 +55,8 @@ public class FontRenderer {
 			}
 			else {
 				// regular text
-				font.drawString(x += width, y, text.substring(i, i + 1), currentColour);
+				font.drawString(x, y, text.substring(i, i + 1), currentColour);
+				x += width;
 			}
 		}
 	}
