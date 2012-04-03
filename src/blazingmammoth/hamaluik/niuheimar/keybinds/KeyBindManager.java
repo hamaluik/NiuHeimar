@@ -16,10 +16,17 @@ import blazingmammoth.hamaluik.niuheimar.util.Utilities;
 public class KeyBindManager implements KeyListener {
 	// store our game container
 	GameContainer gameContainer;
+	
 	// keep track of our key binds
 	private static ArrayList<KeyBinding> keyBindings = new ArrayList<KeyBinding>();
 	
+	// keep track of whether we're accepting input or not
+	private static boolean freezeInput;
+	
 	public KeyBindManager(GameContainer gc) throws Exception {
+		// we want to start by accepting input
+		freezeInput = false;
+		
 		// load all classes in our classpath
 		@SuppressWarnings("rawtypes")
 		Class[] classes = Utilities.getClasses("blazingmammoth.hamaluik.niuheimar");
@@ -69,11 +76,15 @@ public class KeyBindManager implements KeyListener {
 
 	@Override
 	public boolean isAcceptingInput() {
-		return true;
+		return !freezeInput;
 	}
 
 	@Override
 	public void setInput(Input input) { }
+	
+	public static void freezeInput(boolean freeze) {
+		freezeInput = freeze;
+	}
 
 	@Override
 	public void keyPressed(int key, char c) {
