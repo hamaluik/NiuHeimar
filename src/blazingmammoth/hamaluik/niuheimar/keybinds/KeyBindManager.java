@@ -103,7 +103,8 @@ public class KeyBindManager implements KeyListener {
 					// global scope, go for it
 					scopeOk = true;
 				}
-				else if(kb.scope == NiuHeimar.currentScreenProvider().getClass()) {
+				// test to see if our current screen provider inherits from our scope
+				else if(NiuHeimar.currentScreenProvider().getClass().isAssignableFrom(kb.scope)) {
 					// local scope, but yes we're in the correct class
 					scopeOk = true;
 				}
