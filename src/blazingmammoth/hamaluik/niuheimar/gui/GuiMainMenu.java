@@ -32,7 +32,7 @@ public class GuiMainMenu extends GuiScreen {
 			NiuHeimar.setScreenProvider(new GuiOptions());
 		}
 		else if(button.getId() == 3) {
-			NiuHeimar.quit();
+			NiuHeimar.exit();
 		}
 	}
 

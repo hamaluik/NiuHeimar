@@ -16,7 +16,10 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.imageout.ImageOut;
 
 import blazingmammoth.hamaluik.niuheimar.console.Console;
+import blazingmammoth.hamaluik.niuheimar.console.ScriptInfo;
 import blazingmammoth.hamaluik.niuheimar.gui.GuiSplashScreen;
+import blazingmammoth.hamaluik.niuheimar.keybinds.KeyBind;
+import blazingmammoth.hamaluik.niuheimar.keybinds.KeyBindManager;
 import blazingmammoth.hamaluik.niuheimar.log.GameLog;
 import blazingmammoth.hamaluik.niuheimar.util.FontRenderer;
 
@@ -29,6 +32,10 @@ public class NiuHeimar extends BasicGame {
 	
 	// a console object
 	private static Console console;
+	
+	// keep track of key bindings
+	@SuppressWarnings("unused")
+	private static KeyBindManager keyBindManger;
 	
 	// our font
 	FontRenderer fontRenderer;
@@ -49,11 +56,13 @@ public class NiuHeimar extends BasicGame {
 	public NiuHeimar(String title) throws SlickException {		
 		// set our title stuff
 		super(title);
-		
-		// create the default screen provider (our splash screen)
-		screenProvider = new GuiSplashScreen();
 	}
 	
+	@ScriptInfo(
+			alias = "fullscreen",
+			args = {},
+			description = "toggles fullscreen mode")
+	@KeyBind(key = Input.KEY_F3)
 	public static void toggleFullScreen() {
 		try {
 			gameContainer.setFullscreen(!gameContainer.isFullscreen());
@@ -62,7 +71,21 @@ public class NiuHeimar extends BasicGame {
 			GameLog.stackTrace(NiuHeimar.class, e);
 		}
 	}
+
+	@ScriptInfo(
+			alias = "screenshot",
+			args = {},
+			description = "takes a screenshot")
+	@KeyBind(key = Input.KEY_F2)
+	public static void screenShot() {
+		screenShot("");
+	}
 	
+	@ScriptInfo(
+			alias = "screenshot",
+			args = {"filename"},
+			argDescriptions = {"the name of the file to store the screenshot in"},
+			description = "takes a screenshot")
 	public static void screenShot(String filename) {
 		Image target;
 		try {
@@ -88,12 +111,19 @@ public class NiuHeimar extends BasicGame {
 			
 			// write it out!
 			ImageOut.write(target, "screenshots/" + filename);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			GameLog.stackTrace(NiuHeimar.class, e);
 		}
 	}
+
 	
-	public static void quit() {
+	@ScriptInfo(
+			alias = "exit",
+			args = {},
+			description = "exits the game")
+	@KeyBind(key = Input.KEY_F4, keyMods = {Input.KEY_LCONTROL})
+	public static void exit() {
 		gameContainer.exit();
 	}
 
@@ -115,12 +145,18 @@ public class NiuHeimar extends BasicGame {
 			// initialize our font
 			fontRenderer = new FontRenderer(gc);
 			
+			// create out keybind manager
+			keyBindManger = new KeyBindManager(gc);
+			
 			// initialize our console
 			console = new Console(gc);
 			gc.getInput().addKeyListener(console);
 			
 			// update our game container
 			gameContainer = gc;
+			
+			// create the default screen provider (our splash screen)
+			screenProvider = new GuiSplashScreen();
 
 			// let the screen provider initialize itself
 			screenProvider.init(gc);
