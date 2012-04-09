@@ -5,6 +5,7 @@ import org.newdawn.slick.SlickException;
 
 import blazingmammoth.hamaluik.niuheimar.NiuHeimar;
 import blazingmammoth.hamaluik.niuheimar.log.GameLog;
+import blazingmammoth.hamaluik.niuheimar.worldprovider.WorldProvider;
 
 public class GuiMainMenu extends GuiScreen {
 
@@ -23,7 +24,7 @@ public class GuiMainMenu extends GuiScreen {
 	@Override
 	protected void onButtonClicked(ControlButton button) {
 		if(button.getId() == 0) {
-			GameLog.info(this, "New game!");
+			NiuHeimar.setScreenProvider(new WorldProvider());
 		}
 		else if(button.getId() == 1) {
 			GameLog.info(this, "Load game!");

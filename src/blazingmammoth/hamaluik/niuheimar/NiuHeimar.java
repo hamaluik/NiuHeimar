@@ -17,6 +17,7 @@ import org.newdawn.slick.imageout.ImageOut;
 
 import blazingmammoth.hamaluik.niuheimar.console.Console;
 import blazingmammoth.hamaluik.niuheimar.console.ScriptInfo;
+import blazingmammoth.hamaluik.niuheimar.gui.DebugOverlay;
 import blazingmammoth.hamaluik.niuheimar.gui.GuiSplashScreen;
 import blazingmammoth.hamaluik.niuheimar.keybinds.KeyBind;
 import blazingmammoth.hamaluik.niuheimar.keybinds.KeyBindManager;
@@ -30,6 +31,9 @@ public class NiuHeimar extends BasicGame {
 	// this object has control of everything
 	private static ScreenProvider screenProvider;
 	
+	// a debug overlay
+	private DebugOverlay debugOverlay;
+	
 	// a console object
 	private static Console console;
 	
@@ -41,6 +45,7 @@ public class NiuHeimar extends BasicGame {
 	FontRenderer fontRenderer;
 	
 	// internal states
+	private static boolean debugOpen = false;
 	private static boolean consoleOpen = false;
 	
 	public static void main(String[] args) throws SlickException {
@@ -56,6 +61,11 @@ public class NiuHeimar extends BasicGame {
 	public NiuHeimar(String title) throws SlickException {		
 		// set our title stuff
 		super(title);
+	}
+	
+	@KeyBind(key = Input.KEY_F1)
+	public static void toggleDebugOverlay() {
+		debugOpen = !debugOpen;
 	}
 	
 	@ScriptInfo(
@@ -152,6 +162,9 @@ public class NiuHeimar extends BasicGame {
 			console = new Console(gc);
 			gc.getInput().addKeyListener(console);
 			
+			// initialize our debug overlay
+			debugOverlay = new DebugOverlay();
+			
 			// update our game container
 			gameContainer = gc;
 			
@@ -208,6 +221,11 @@ public class NiuHeimar extends BasicGame {
 			else {
 				// ok, draw our screen provider like normal
 				screenProvider.render(gc, g);
+			}
+			
+			// render the debug overlay if we have it
+			if(debugOpen) {
+				debugOverlay.render(gc, g);
 			}
 		}
 		catch(Exception e) {
